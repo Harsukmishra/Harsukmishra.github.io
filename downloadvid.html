@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Video Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            margin: 50px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            margin: auto;
+        }
+        h1 { color: #333; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background: #ff416c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        button:hover { background: #ff4b2b; }
+        .status { margin-top: 10px; font-size: 16px; font-weight: bold; color: #555; }
+        .download-link {
+            display: none;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .thumbnail-container {
+            margin-top: 15px;
+            display: none;
+        }
+        .thumbnail-container img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        /* ✅ Loader CSS */
+        .loader {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 KingStatus Video Downloader</h1>
+            Wait One Minet To Downloading
+        <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL" oninput="showThumbnail()">
+        <div class="thumbnail-container" id="thumbnailContainer">
+            <img id="thumbnail" src="" alt="Video Thumbnail">
+        </div>
+        <button onclick="startDownload()">Download</button>
+
+        <!-- ✅ Loader -->
+        <div class="loader" id="loader">
+            <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..." width="50">
+            <p>Processing... Please wait</p>
+        </div>
+
+        <div class="status" id="status">Waiting for input...</div>
+        <a id="downloadLink" class="download-link" target="_blank">Download Video</a>
+    </div>
+
+    <script>
+        function getVideoId(url) {
+            try {
+                let urlObj = new URL(url);
+                if (urlObj.hostname === "youtu.be") {
+                    return urlObj.pathname.substring(1);
+                } else if (urlObj.hostname.includes("youtube.com")) {
+                    if (urlObj.pathname.startsWith("/shorts/")) {
+                        return urlObj.pathname.split("/")[2];
+                    }
+                    return new URLSearchParams(urlObj.search).get("v");
+                }
+            } catch (error) {
+                return null;
+            }
+            return null;
+        }
+
+        function showThumbnail() {
+            let url = document.getElementById("videoUrl").value;
+            let videoId = getVideoId(url);
+            if (videoId) {
+                let thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                document.getElementById("thumbnail").src = thumbnailUrl;
+                document.getElementById("thumbnailContainer").style.display = "block";
+            } else {
+                document.getElementById("thumbnailContainer").style.display = "none";
+            }
+        }
+
+        async function startDownload() {
+            let url = document.getElementById("videoUrl").value;
+            let videoId = getVideoId(url);
+            if (!videoId) {
+                alert("Please enter a valid YouTube URL");
+                return;
+            }
+
+            // ✅ Show Loader
+            document.getElementById("loader").style.display = "block";
+            document.getElementById("status").innerText = "Processing...";
+            document.getElementById("downloadLink").style.display = "none";
+
+            try {
+                let response = await fetch(`https://female-sallyann-harsukmishra-0ec12583.koyeb.app/download?url=${encodeURIComponent(url)}`);
+                let data = await response.json();
+
+                if (data.status === "success") {
+                    // ✅ Hide Loader
+                    document.getElementById("loader").style.display = "none";
+
+                    document.getElementById("status").innerText = "✅ Download Ready!";
+                    document.getElementById("downloadLink").href = data.download_url;
+                    document.getElementById("downloadLink").style.display = "inline-block";
+
+                    // ✅ Auto Start Download
+                    setTimeout(() => {
+                        window.location.href = data.download_url;
+                    }, 1000);
+                } else {
+                    document.getElementById("status").innerText = "❌ Error: " + data.message;
+                    document.getElementById("loader").style.display = "none"; // Hide Loader on Error
+                }
+            } catch (error) {
+                document.getElementById("status").innerText = "❌ API Error: Unable to fetch download link.";
+                document.getElementById("loader").style.display = "none"; // Hide Loader on API Error
+            }
+        }
+
+        function autoFetchFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let videoId = urlParams.get("id");
+            if (videoId) {
+                let videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                document.getElementById("videoUrl").value = videoUrl;
+                showThumbnail();
+                startDownload();
+            }
+        }
+
+        // ✅ Auto Fetch if URL has `id` parameter
+        autoFetchFromURL();
+    </script>
+</body>
+</html>
