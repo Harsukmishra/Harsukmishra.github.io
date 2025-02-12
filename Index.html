@@ -3,13 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Shorts Player</title>
+    <meta name="description" content="Watch YouTube Shorts seamlessly and save your favorite videos.">
+    <meta property="og:title" content="YouTube Shorts Player">
+    <meta property="og:description" content="A simple and clean interface to browse and like YouTube Shorts videos.">
+    <title>King Status Video</title>
 
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <!-- Link to External CSS File -->
+    <!-- External CSS -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+    
+    <style>
+        /* ✅ Floating Button Styles */
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745; /* Green Color */
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            font-size: 20px;
+            transition: background 0.3s;
+        }
+
+        .floating-btn:hover {
+            background-color: #218838;
+        }
+
+        /* ✅ Media Query for Smaller Screens */
+        @media (max-width: 600px) {
+            .floating-btn {
+                bottom: 10px;
+                right: 10px;
+                padding: 12px;
+                font-size: 18px; /* Smaller font size on mobile */
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -19,31 +58,102 @@
         <span class="slider round"></span>
     </label>
 
-    <!-- Navigation Bar -->
+    <!-- ✅ Navigation Bar -->
     <nav>
-        <button onclick="showHome()">🏠 Home</button>
-        <button onclick="showLikedVideos()">❤️ Liked Videos</button>
+        <button class="homeBtn" onclick="showHome()">🏠 Home</button>
+        <button class="likedBtn" onclick="showLikedVideos()">❤️ Liked Videos</button>
     </nav>
 
-    <!-- Home Section -->
+    <!-- ✅ Home Section -->
     <section id="homeSection">
+        <h2>WELCOME TO OUR STATUS APP</h2>
         <ul id="videoList"></ul>
     </section>
 
-    <!-- Liked Videos Section (Initially Hidden) -->
+    <!-- ✅ Liked Videos Section (Initially Hidden) -->
     <section id="likedVideosSection" style="display: none;">
         <h2>Liked Videos</h2>
         <ul id="likedVideosList"></ul>
     </section>
 
-    <!-- Video Player -->
+    <!-- ✅ Video Player (Initially Hidden) -->
     <div id="videoPlayer">
-        <span class="closeBtn" onclick="closePlayer()">✖</span>
+        <button id="closePlayerBtn" onclick="closePlayer()">✖ Close</button>
         <iframe id="videoIframe" src="" allowfullscreen></iframe>
     </div>
 
-    <!-- Link JavaScript File -->
-    <script src="script.js"></script>
+    <!-- ✅ Share Modal (Initially Hidden) -->
+    <div class="shareModal" id="shareModal" style="display: none;">
+        <div class="shareContent">
+            <h3>Share this video</h3>
+            <button onclick="shareOnWhatsapp()">Share on WhatsApp</button>
+            <button onclick="shareOnTelegram()">Share on Telegram</button>
+            <button onclick="shareOnFacebook()">Share on Facebook</button>
+            <button onclick="closeShareModal()">Close</button>
 
+            <!-- Social Media Buttons inside the Share Modal -->
+            <div class="socialMediaButtons">
+                <a href="https://wa.me/" class="socialBtn whatsappBtn" target="_blank">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://t.me/" class="socialBtn telegramBtn" target="_blank">
+                    <i class="fab fa-telegram-plane"></i> Telegram
+                </a>
+                <a href="https://facebook.com/" class="socialBtn facebookBtn" target="_blank">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ✅ Progress Popup Modal -->
+<div id="progressModal" class="modal">
+    <div class="modal-content">
+        <p id="progressText">⏳ Please wait... Downloading 0%</p>
+    </div>
+</div>
+
+<!-- ✅ Modal Styling -->
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: black;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 18px;
+        font-color: black;
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
+
+
+   <!-- Floating Button with a download icon -->
+    <button class="floating-btn" id="downloadBtn" onclick="redirectToDownload()">
+        <i class="fas fa-download"></i>  <!-- Font Awesome download icon -->
+    </button>
+
+    <script>
+        // Function to redirect the user when the floating button is clicked
+        function redirectToDownload() {
+            window.location.href = "download.html";
+        }
+    </script>
+    
+    <!-- JavaScript file from path -->
+    <script type="module" src="script.js"></script>
+    
 </body>
 </html>
